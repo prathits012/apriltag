@@ -75,23 +75,26 @@ int main(int argc, char *argv[])
     //    cerr << "Couldn't open video capture device" << endl;
     //    return -1;
     //}
-    const char *image = getopt_get_string(getopt, "image");
+    const char *imageName = getopt_get_string(getopt, "image");
 
-    image = imread(image, CV_LOAD_IMAGE_COLOR); 
+    Mat image = imread(imageName, CV_LOAD_IMAGE_COLOR); 
 
     if(! image.data )                              // Check for invalid input
     {
         cout <<  "Could not open or find the image" << std::endl ;
         return -1;
     }
-
-    cvtColor(image, gray, COLOR_BG2GRAY );
+    Mat gray;
+    cvtColor(image, gray, COLOR_BGR2GRAY );
 
             image_u8_t im = { .width = gray.cols,
             .height = gray.rows,
             .stride = gray.cols,
             .buf = gray.data
         };
+
+    imshow("Grayscale image", gray);
+    waitKey(1);
 
 
     // Initialize tag detector with options
@@ -134,7 +137,7 @@ int main(int argc, char *argv[])
 
         // Make an image_u8_t header for the Mat data
 
-        zarray_t *detections = apriltag_detector_detect(td, &im);
+        zarray_t *detections = apriltag_detector_detect(td, &gray);
         cout << zarray_size(detections) << " tags detected" << endl;
 
         // Draw detection outlines
@@ -169,9 +172,7 @@ int main(int argc, char *argv[])
         apriltag_detections_destroy(detections);
 
         imshow("Tag Detections", frame);
-        if (waitKey(30) >= 0)
-            break;
-    //}
+        waitKey(1);
 
     apriltag_detector_destroy(td);
 
