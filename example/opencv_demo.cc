@@ -59,6 +59,9 @@ int main(int argc, char *argv[])
     getopt_add_double(getopt, 'b', "blur", "0.0", "Apply low-pass blur to input");
     getopt_add_bool(getopt, '0', "refine-edges", 1, "Spend more time trying to align edges of tags");
 
+
+    getopt_add_string(getopt, 'i', "image", "", ".jpg file to use for image");
+
     if (!getopt_parse(getopt, argc, argv, 1) ||
             getopt_get_bool(getopt, "help")) {
         printf("Usage: %s [options]\n", argv[0]);
@@ -67,11 +70,29 @@ int main(int argc, char *argv[])
     }
 
     // Initialize camera
-    VideoCapture cap(0);
-    if (!cap.isOpened()) {
-        cerr << "Couldn't open video capture device" << endl;
+   // VideoCapture cap(0);
+   // if (!cap.isOpened()) {
+    //    cerr << "Couldn't open video capture device" << endl;
+    //    return -1;
+    //}
+    const char *image = getopt_get_string(getopt, "image");
+
+    image = imread(image, CV_LOAD_IMAGE_COLOR); 
+
+    if(! image.data )                              // Check for invalid input
+    {
+        cout <<  "Could not open or find the image" << std::endl ;
         return -1;
     }
+
+    cvtColor(image, gray, COLOR_BG2GRAY );
+
+            image_u8_t im = { .width = gray.cols,
+            .height = gray.rows,
+            .stride = gray.cols,
+            .buf = gray.data
+        };
+
 
     // Initialize tag detector with options
     apriltag_family_t *tf = NULL;
@@ -106,17 +127,12 @@ int main(int argc, char *argv[])
     td->debug = getopt_get_bool(getopt, "debug");
     td->refine_edges = getopt_get_bool(getopt, "refine-edges");
 
-    Mat frame, gray;
-    while (true) {
-        cap >> frame;
-        cvtColor(frame, gray, COLOR_BGR2GRAY);
+ //   Mat frame, gray;
+   // while (true) {
+     //   cap >> frame;
+       // cvtColor(frame, gray, COLOR_BGR2GRAY);
 
         // Make an image_u8_t header for the Mat data
-        image_u8_t im = { .width = gray.cols,
-            .height = gray.rows,
-            .stride = gray.cols,
-            .buf = gray.data
-        };
 
         zarray_t *detections = apriltag_detector_detect(td, &im);
         cout << zarray_size(detections) << " tags detected" << endl;
@@ -155,7 +171,7 @@ int main(int argc, char *argv[])
         imshow("Tag Detections", frame);
         if (waitKey(30) >= 0)
             break;
-    }
+    //}
 
     apriltag_detector_destroy(td);
 
