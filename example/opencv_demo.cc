@@ -144,16 +144,16 @@ int main(int argc, char *argv[])
         for (int i = 0; i < zarray_size(detections); i++) {
             apriltag_detection_t *det;
             zarray_get(detections, i, &det);
-            line(im, Point(det->p[0][0], det->p[0][1]),
+            line(gray, Point(det->p[0][0], det->p[0][1]),
                      Point(det->p[1][0], det->p[1][1]),
                      Scalar(0, 0xff, 0), 2);
-            line(im, Point(det->p[0][0], det->p[0][1]),
+            line(gray, Point(det->p[0][0], det->p[0][1]),
                      Point(det->p[3][0], det->p[3][1]),
                      Scalar(0, 0, 0xff), 2);
-            line(im, Point(det->p[1][0], det->p[1][1]),
+            line(gray, Point(det->p[1][0], det->p[1][1]),
                      Point(det->p[2][0], det->p[2][1]),
                      Scalar(0xff, 0, 0), 2);
-            line(im, Point(det->p[2][0], det->p[2][1]),
+            line(gray, Point(det->p[2][0], det->p[2][1]),
                      Point(det->p[3][0], det->p[3][1]),
                      Scalar(0xff, 0, 0), 2);
 
@@ -165,13 +165,13 @@ int main(int argc, char *argv[])
             int baseline;
             Size textsize = getTextSize(text, fontface, fontscale, 2,
                                             &baseline);
-            putText(im, text, Point(det->c[0]-textsize.width/2,
+            putText(gray, text, Point(det->c[0]-textsize.width/2,
                                        det->c[1]+textsize.height/2),
                     fontface, fontscale, Scalar(0xff, 0x99, 0), 2);
         }
         apriltag_detections_destroy(detections);
 
-        imshow("Tag Detections", im);
+        imshow("Tag Detections", gray);
         waitKey(1);
 
     apriltag_detector_destroy(td);
