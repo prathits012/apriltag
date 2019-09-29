@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
         };
 
     imshow("Grayscale image", gray);
-    waitKey(1);
+    waitKey(0);
 
 
     // Initialize tag detector with options
