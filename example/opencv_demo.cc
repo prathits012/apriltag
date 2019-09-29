@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
         apriltag_detections_destroy(detections);
 
         imshow("Tag Detections", gray);
-        waitKey(1);
+        waitKey(0);
 
     apriltag_detector_destroy(td);
 
